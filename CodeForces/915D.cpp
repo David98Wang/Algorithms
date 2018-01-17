@@ -1,91 +1,61 @@
+//Almost Acyclic Graph
 #include<bits/stdc++.h>
+#define N 510
 using namespace std;
-vector<int>path[501];
-vector<int>rPath[501];
-vector<int>trop;
+vector<int>path[N];
+int in[N],in2[N];
 int n,m;
-bool inTrop[501];
 
-bool isAcyclic(int remA,int remB)
+bool isAcyclic()
 {
-    trop.clear();
-    //cout<<remA<<" "<<remB<<endl;
-    for(int i=0;i<path[remA].size();i++)
-    {
-        if(path[remA][i]==remB)
-            path[remA].erase(path[remA].begin()+i);
-    }
-    for(int i=0;i<rPath[remB].size();i++)
-    {
-        if(rPath[remB][i]==remA)
-            rPath[remB].erase(rPath[remB].begin()+i);
-    }
-    for(int i=0;i<=500;i++)
-        inTrop[i] = false;
-    for(int i=1;i<=n;i++){
-        if(rPath[i].size()==0)
+    queue<int>trop;
+    int cnt = 0;
+    for(int i=1; i<=n; i++)
+        if(in[i]<=0)
         {
-            trop.push_back(i);
-            inTrop[i]=true;
+            trop.push(i);
+            cnt++;
         }
-    }
-    if(trop.size()==0)return false;
-    int previ = 0;
-    while(trop.size()!=n)
+    while(!trop.empty())
     {
-        int cur = trop.size();
-        for(int i=previ;i<trop.size();i++)
+        //cout<<trop.size()<<endl;
+        int cur = trop.front();
+        trop.pop();
+        for(int i=0; i<path[cur].size(); i++)
         {
-            for(int j=0;j<path[trop[i]].size();j++)
+            int cur1 = path[cur][i];
+            in[cur1]--;
+            if(in[cur1]==0)
             {
-                if(!inTrop[path[trop[i]][j]])
-                {
-                    inTrop[path[trop[i]][j]] = true;
-                    trop.push_back(path[trop[i]][j]);
-                }
-                else
-                {
-                    return false;
-                }
+                //cout<<cur1<<endl;
+                trop.push(cur1);
+                cnt++;
             }
         }
-        if(cur==trop.size())return false;
-        previ = cur;
     }
-    path[remA].push_back(remB);
-    rPath[remB].push_back(remA);
-    return true;
+    return (cnt==n);
 }
-bool hasCycle()
-{
 
-}
 int main()
 {
-
     cin>>n>>m;
-    int in,in1;
-    for(int i=0;i<m;i++)
+    int temp,temp1;
+    for(int i=0; i<m; i++)
     {
-        cin>>in>>in1;
-        path[in].push_back(in1);
-        rPath[in1].push_back(in);
+        scanf("%d%d",&temp,&temp1);
+        path[temp].push_back(temp1);
+        in2[temp1]++;
     }
-    if(isAcyclic(0,0))
-        cout<<"YES"<<endl;
-    else
+    for(int i=1; i<=n; i++)
     {
-        for(int i=1;i<=n;i++)
-            for(int j=0;j<path[i].size();j++)
+        memcpy(in,in2,sizeof(in));
+        in[i]--;
+        if(isAcyclic())
         {
-            if(isAcyclic(i,path[i][j]))
-            {
-
-                cout<<"YES"<<endl;
-                return 0;
-            }
+            cout<<"YES"<<endl;
+            return 0;
         }
-        cout<<"NO"<<endl;
     }
+    cout<<"NO"<<endl;
     return 0;
 }
