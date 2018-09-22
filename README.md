@@ -1,3 +1,3 @@
 # Algorithms
-Coded in CPP
-ASDF
+To keep track of practice questions.
+Coded in CPP.
